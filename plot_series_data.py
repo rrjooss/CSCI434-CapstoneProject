@@ -10,31 +10,42 @@ def main():
 
     lps_df = pandas.read_csv("data/labeled_pkt_stats.csv")
 
-    domains = lps_df["domain"].unique()
+    for col in ["pkt_len", "time_delta"]:
+        lps_df.plot.hist(
+            column=[col],
+            by="domain",
+            bins=1000,
+            figsize=(10, 8),
+            log=True,
+        )
 
-    lps_by_domain_dfs = map(lambda domain: lps_df[lps_df["domain"] == domain], domains)
+        pyplot.tight_layout()
+        pyplot.savefig(f"plots/{col}_distribution.png")
 
-    lps_df.plot.hist(
-        column=["pkt_len"],
-        by="domain",
-        bins=1000,
-        figsize=(10, 8),
-        log=True,
-    )
+    ts_df = pandas.read_csv("data/target_stats.csv")
 
-    pyplot.tight_layout()
-    pyplot.savefig("plots/pkt_len_distribution.png")
+    for col in [
+        "time_delta_q1",
+        "time_delta_median",
+        "time_delta_q3",
+        "time_delta_max",
+        "time_delta_mean",
+        "time_delta_std",
+        "pkt_len_median",
+        "pkt_len_q3",
+        "pkt_len_max",
+        "pkt_len_mean",
+        "pkt_len_std",
+    ]:
+        ts_df.plot.hist(
+            column=[col],
+            by="domain",
+            bins=100,
+            figsize=(10, 8),
+        )
 
-    lps_df.plot.hist(
-        column=["time_delta"],
-        by="domain",
-        bins=1000,
-        figsize=(10, 8),
-        log=True,
-    )
-
-    pyplot.tight_layout()
-    pyplot.savefig("plots/time_delta_distribution.png")
+        pyplot.tight_layout()
+        pyplot.savefig(f"plots/{col}_distribution.png")
 
 
 if __name__ == "__main__":
