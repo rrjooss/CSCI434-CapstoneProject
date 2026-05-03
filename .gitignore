@@ -1,2 +1,5 @@
+/pkt_stats.csv
+*/pkt_stats.csv
 /.direnv
 /__pycache__
+/tcpdump.pcap
