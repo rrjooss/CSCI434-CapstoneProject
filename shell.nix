@@ -18,5 +18,6 @@ pkgs.mkShell {
     python -m venv .venv
     source .venv/bin/activate  
     pip install -r requirements.txt
+    LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib/:/run/opengl-driver/lib/
   '';
 }
