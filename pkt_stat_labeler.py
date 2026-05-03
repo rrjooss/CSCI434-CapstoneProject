@@ -6,8 +6,8 @@ import pandas
 
 def main():
 
-    intervals_df = pandas.read_csv("intervals.csv")
-    pkt_stats_df = pandas.read_csv("pkt_stats.csv")
+    intervals_df = pandas.read_csv("data/intervals.csv")
+    pkt_stats_df = pandas.read_csv("data/pkt_stats.csv")
 
     print(intervals_df, file=sys.stderr)
     print(pkt_stats_df, file=sys.stderr)
@@ -34,7 +34,7 @@ def main():
                 }
                 new_target = False
 
-    labeled_pkt_stats_df.to_csv("labeled_pkt_stats.csv", index=False)
+    labeled_pkt_stats_df.to_csv("data/labeled_pkt_stats.csv", index=False)
 
     print(labeled_pkt_stats_df, file=sys.stderr)
 

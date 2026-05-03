@@ -1,6 +1,8 @@
-labeled_pkt_stas.csv
+/data/pkt_stats.csv
+/data/labeled_pkt_stats.csv
+/labeled_pkt_stats.csv
 /pkt_stats.csv
 */pkt_stats.csv
 /.direnv
 /__pycache__
-/tcpdump.pcap
+/data/tcpdump.pcap
