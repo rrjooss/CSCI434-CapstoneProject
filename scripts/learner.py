@@ -7,7 +7,7 @@ import seaborn
 from matplotlib import pyplot
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -31,6 +31,10 @@ def fmt_splits(label, X, y, original):
 
 
 def main():
+    if sys.argv[1] != "--bootstrap" and sys.argv[1] != "--kfold":
+        print("Please pass --bootstrap or --kfold as an argument", file=sys.stderr)
+        quit(1)
+
     ts_df = pandas.read_csv("data/target_stats.csv").sample(frac=1)
 
     target_col = "domain"
@@ -54,8 +58,36 @@ def main():
     print(fmt_splits("Training", X_train, pandas.Series(y_train), ts_df))
     print(fmt_splits("Test", X_test, pandas.Series(y_test), ts_df))
 
-    forest = ExtraTreesClassifier(bootstrap=True, random_state=42)
-    forest.fit(X_train, y_train)
+    forest = ExtraTreesClassifier(bootstrap=True)
+
+    if sys.argv[1] == "--kfold":
+        param_grid = {
+            "n_estimators": [10, 20, 50, 100, 200],
+            "max_depth": [None, 5, 10, 20, 30],
+            "min_samples_leaf": [1, 5, 10],
+            "min_samples_split": [2, 5, 10],
+            "bootstrap": [True, False],
+        }
+
+        grid_search = GridSearchCV(
+            ExtraTreesClassifier(random_state=42),
+            param_grid=param_grid,
+            cv=10,
+            n_jobs=-1,
+            scoring="accuracy",
+        )
+
+        grid_search.fit(X_train, y_train)
+
+        best_params = grid_search.best_params_
+        best_score_cv = grid_search.best_score_
+
+        print(f"\nBest Parameters Found: {best_params}")
+        print(f"Best Cross-Validation Score (on Training set): {best_score_cv:.4f}")
+
+        forest = grid_search.best_estimator_
+    else:
+        forest.fit(X_train, y_train)
 
     test_preds = forest.predict(X_test)
 
