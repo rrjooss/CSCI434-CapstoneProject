@@ -46,17 +46,22 @@ def main():
     label_encoder = LabelEncoder()
     y_encoded = label_encoder.fit_transform(y)
 
-    print(f"Classes found: {label_encoder.classes_}")
-    print(f"Number of classes: {len(label_encoder.classes_)}")
+    print(f"Classes found: {label_encoder.classes_}", file=sys.stderr)
+    print(f"Number of classes: {len(label_encoder.classes_)}", file=sys.stderr)
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y_encoded, test_size=0.2, random_state=3, stratify=y_encoded
+        X, y_encoded, test_size=0.2, stratify=y_encoded
     )
 
-    print(f"\nData Split Sizes and Distributions ({fmt_props_head(ts_df['domain'])}):")
-    print(fmt_splits("Original", ts_df, ts_df["domain"], ts_df))
-    print(fmt_splits("Training", X_train, pandas.Series(y_train), ts_df))
-    print(fmt_splits("Test", X_test, pandas.Series(y_test), ts_df))
+    print(
+        f"\nData Split Sizes and Distributions ({fmt_props_head(ts_df['domain'])}):",
+        file=sys.stderr,
+    )
+    print(fmt_splits("Original", ts_df, ts_df["domain"], ts_df), file=sys.stderr)
+    print(
+        fmt_splits("Training", X_train, pandas.Series(y_train), ts_df), file=sys.stderr
+    )
+    print(fmt_splits("Test", X_test, pandas.Series(y_test), ts_df), file=sys.stderr)
 
     forest = ExtraTreesClassifier(bootstrap=True)
 
@@ -70,7 +75,7 @@ def main():
         }
 
         grid_search = GridSearchCV(
-            ExtraTreesClassifier(random_state=42),
+            ExtraTreesClassifier(),
             param_grid=param_grid,
             cv=10,
             n_jobs=-1,
@@ -82,8 +87,11 @@ def main():
         best_params = grid_search.best_params_
         best_score_cv = grid_search.best_score_
 
-        print(f"\nBest Parameters Found: {best_params}")
-        print(f"Best Cross-Validation Score (on Training set): {best_score_cv:.4f}")
+        print(f"\nBest Parameters Found: {best_params}", file=sys.stderr)
+        print(
+            f"Best Cross-Validation Score (on Training set): {best_score_cv:.4f}",
+            file=sys.stderr,
+        )
 
         forest = grid_search.best_estimator_
     else:
@@ -93,12 +101,13 @@ def main():
 
     test_acc = accuracy_score(y_test, test_preds)
 
-    print(f"\nModel Performance:")
-    print(f"Test Accuracy: {test_acc:.4f}")
+    print(f"\nModel Performance:", file=sys.stderr)
+    print(f"Test Accuracy: {test_acc:.4f}", file=sys.stderr)
 
-    print("\nClassification Report:")
+    print("\nClassification Report:", file=sys.stderr)
     print(
-        classification_report(y_test, test_preds, target_names=label_encoder.classes_)
+        classification_report(y_test, test_preds, target_names=label_encoder.classes_),
+        file=sys.stderr,
     )
 
     feature_importances = forest.feature_importances_
@@ -106,8 +115,8 @@ def main():
         {"Feature": feature_cols, "Importance": feature_importances}
     ).sort_values(by="Importance", ascending=False)
 
-    print("\nTop 5 Most Important Features:")
-    print(feat_imp_df.head())
+    print("\nTop 5 Most Important Features:", file=sys.stderr)
+    print(feat_imp_df.head(), file=sys.stderr)
 
     pyplot.style.use("seaborn-v0_8-whitegrid")
     fig, axs = pyplot.subplots(1, 2, figsize=(18, 6))
