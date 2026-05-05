@@ -6,7 +6,8 @@ import pandas
 import seaborn
 from matplotlib import pyplot
 from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import (accuracy_score, classification_report,
+                             confusion_matrix)
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.preprocessing import LabelEncoder
 
@@ -64,6 +65,7 @@ def main():
     print(fmt_splits("Test", X_test, pandas.Series(y_test), ts_df), file=sys.stderr)
 
     forest = ExtraTreesClassifier(bootstrap=True)
+    params = {"bootstrap": True}
 
     if sys.argv[1] == "--kfold":
         param_grid = {
@@ -84,10 +86,10 @@ def main():
 
         grid_search.fit(X_train, y_train)
 
-        best_params = grid_search.best_params_
+        params = grid_search.best_params_
         best_score_cv = grid_search.best_score_
 
-        print(f"\nBest Parameters Found: {best_params}", file=sys.stderr)
+        print(f"\nBest Parameters Found: {params}", file=sys.stderr)
         print(
             f"Best Cross-Validation Score (on Training set): {best_score_cv:.4f}",
             file=sys.stderr,
@@ -142,6 +144,10 @@ def main():
 
     pyplot.tight_layout()
     pyplot.savefig(f"plots/learner_plots.png")
+
+    # Print data in csv format
+    # validation_method,accuracy,forest_params
+    print(f'{sys.argv[1][2:]},{test_acc},"{str(params)}"')
 
 
 if __name__ == "__main__":
