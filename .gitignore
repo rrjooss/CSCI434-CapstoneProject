@@ -7,3 +7,11 @@
 /__pycache__
 /data/tcpdump.pcap
 /plots
+/paper/paper.aux
+/paper/paper.bbl
+/paper/paper.blg
+/paper/paper.fdb_latexmk
+/paper/paper.fls
+/paper/paper.log
+/paper/paper.out
+/paper/paper.synctex.gz
